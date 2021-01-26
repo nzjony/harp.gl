@@ -16,3 +16,9 @@ jobs:
         uses: cirrus-actions/rebase@1.4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: The job has failed?
+        if: failure()
+        run: echo Failure to rebase
+      - name: The job has succeeded?
+        if: success()
+        run: echo Succeeded rebasing
