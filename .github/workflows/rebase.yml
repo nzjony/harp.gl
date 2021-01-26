@@ -9,6 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Comment on PR
+        uses: thollander/actions-comment-pull-request@master
         with:
           message: 'Attempting to rebase...'
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
