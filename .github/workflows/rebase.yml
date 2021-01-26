@@ -9,10 +9,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Comment on PR
-        uses: thollander/actions-comment-pull-request@master
+        uses: actions/github-script@v3
         with:
-          message: 'Attempting to rebase...'
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '👋 Attempting to rebase...'
+            })
       - name: Checkout the latest code
         uses: actions/checkout@v2
         with:
@@ -22,14 +28,26 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Comment PR on failure.
-        uses: thollander/actions-comment-pull-request@master
+        uses: actions/github-script@v3
         if: failure()
         with:
-          message: 'Rebase failed.'
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '⛔ Failure‼ ⛔'
+            })
       - name: Comment PR on success.
-        uses: thollander/actions-comment-pull-request@master
+        uses: actions/github-script@v3
         if: success()
         with:
-          message: 'Rebase succeeded.'
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '🏗 Rebase success 😊'
+            })
