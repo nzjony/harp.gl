@@ -8,6 +8,10 @@ jobs:
     if: github.event.issue.pull_request != '' && contains(github.event.comment.body, '/rebase')
     runs-on: ubuntu-latest
     steps:
+      - name: Comment on PR
+        with:
+          message: 'Attempting to rebase...'
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Checkout the latest code
         uses: actions/checkout@v2
         with:
@@ -16,9 +20,15 @@ jobs:
         uses: cirrus-actions/rebase@1.4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: The job has failed?
+      - name: Comment PR on failure.
+        uses: thollander/actions-comment-pull-request@master
         if: failure()
-        run: echo Failure to rebase
-      - name: The job has succeeded?
+        with:
+          message: 'Rebase failed.'
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Comment PR on success.
+        uses: thollander/actions-comment-pull-request@master
         if: success()
-        run: echo Succeeded rebasing
+        with:
+          message: 'Rebase succeeded.'
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
