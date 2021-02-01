@@ -7,9 +7,7 @@ jobs:
   rebase:
     name: Rebase
     if: github.event.issue.pull_request != '' &&
-      contains(github.event.comment.body, 'rebase please') &&
-      (github.event.comment.author_association == 'MEMBER' ||
-      github.event.comment.author_association == 'OWNER')
+      contains(github.event.comment.body, 'rebase please')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the latest code
@@ -22,7 +20,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Comment PR on failure.
         uses: actions/github-script@v3
-        if: failure()
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
@@ -30,17 +27,5 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: 'Rebase failed, please see logs for more info... Perhaps there is a conflict?'
-            })
-      - name: Comment PR on success.
-        uses: actions/github-script@v3
-        if: success()
-        with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
-          script: |
-            github.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: 'Rebase succeeded.'
+              body: 'github author_association' + github.event.comment.author_association
             })
